@@ -26,7 +26,7 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/sketch7/aspnet-prerendering"
+    "url": "git+https://github.com/sketch7/aspnet-prerendering.git"
   },
   "dependencies": {
     "domain-task": "^3.0.3"
