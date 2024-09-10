@@ -1,1 +1,1 @@
-﻿export * from "./lib/aspnet-prerenderer";
+﻿export * from "./lib/aspnet-prerendering";

@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as url from "url";
-import * as path from "path";
 import * as domain from "domain";
 import { run as domainTaskRun, baseUrl as domainTaskBaseUrl } from "domain-task/main";
 
-import { BootFunc, BootFuncParams, BootModuleInfo, RenderToStringCallback, RenderToStringFunc } from "./prerendering.model";
+import { BootFn, BootFnParams, BootModuleInfo, RenderResult, RenderToStringFn } from "./prerendering.model";
 
 const defaultTimeoutMilliseconds = 30 * 1000;
 
-export function createServerRenderer(bootFunc: BootFunc): RenderToStringFunc {
-	console.warn(">>>> createServerRenderer PRE FN");
-	const resultFunc = (
-		callback: RenderToStringCallback,
+// REF: based on https://github.com/aspnet/JavaScriptServices/blob/master/src/Microsoft.AspNetCore.SpaServices/npm/aspnet-prerendering/src/Prerendering.ts
+export function createServerRenderer(bootFunc: BootFn): RenderToStringFn {
+	const resultFunc: RenderToStringFn & { isServerRenderer: boolean } = (
 		applicationBasePath: string,
 		bootModule: BootModuleInfo,
 		absoluteRequestUrl: string,
@@ -20,15 +18,21 @@ export function createServerRenderer(bootFunc: BootFunc): RenderToStringFunc {
 		overrideTimeoutMilliseconds: number,
 		requestPathBase: string
 	) => {
-		console.warn(">>>> createServerRenderer applicationBasePath", applicationBasePath);
+		let renderPromiseResolve: (value?: RenderResult) => void;
+		let renderPromiseReject: (reason?: any) => void;
+		const renderPromise = new Promise<RenderResult>((resolve, reject) => {
+			renderPromiseResolve = resolve;
+			renderPromiseReject = reject;
+		});
+
 		// Prepare a promise that will represent the completion of all domain tasks in this execution context.
 		// The boot code will wait for this before performing its final render.
 		let domainTaskCompletionPromiseResolve;
-		const domainTaskCompletionPromise = new Promise((resolve, _reject) => {
+		const domainTaskCompletionPromise = new Promise(resolve => {
 			domainTaskCompletionPromiseResolve = resolve;
 		});
 		const parsedAbsoluteRequestUrl = url.parse(absoluteRequestUrl);
-		const params: BootFuncParams = {
+		const params: BootFnParams = {
 			// It's helpful for boot funcs to receive the query as a key-value object, so parse it here
 			// e.g., react-redux-router requires location.query to be a key-value object for consistency with client-side behaviour
 			location: url.parse(requestPathAndQuery, /* parseQueryString */ true),
@@ -54,7 +58,7 @@ export function createServerRenderer(bootFunc: BootFunc): RenderToStringFunc {
 			// Begin rendering, and apply a timeout
 			const bootFuncPromise = bootFunc(params);
 			if (!bootFuncPromise || typeof bootFuncPromise.then !== "function") {
-				callback(`Prerendering failed because the boot function in ${bootModule.moduleName} did not return a promise.`, null);
+				renderPromiseReject(`Prerendering failed because the boot function in ${bootModule.moduleName} did not return a promise.`);
 				return;
 			}
 			const timeoutMilliseconds = overrideTimeoutMilliseconds || defaultTimeoutMilliseconds; // e.g., pass -1 to override as 'never time out'
@@ -67,19 +71,21 @@ export function createServerRenderer(bootFunc: BootFunc): RenderToStringFunc {
 
 			// Actually perform the rendering
 			bootFuncPromiseWithTimeout.then(successResult => {
-				callback(null, successResult);
+				renderPromiseResolve(successResult);
 			}, error => {
-				callback(error, null);
+				renderPromiseReject(error);
 			});
 		}, /* completion callback */ errorOrNothing => {
 			if (errorOrNothing) {
-				callback(errorOrNothing, null);
+				renderPromiseReject(errorOrNothing);
 			} else {
 				// There are no more ongoing domain tasks (typically data access operations), so we can resolve
 				// the domain tasks promise which notifies the boot code that it can do its final render.
 				domainTaskCompletionPromiseResolve();
 			}
 		});
+
+		return renderPromise;
 	};
 
 	// Indicate to the prerendering code bundled into Microsoft.AspNetCore.SpaServices that this is a serverside rendering

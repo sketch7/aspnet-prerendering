@@ -1,5 +1,5 @@
 {
-  "name": "aspnet-prerenderer",
+  "name": "aspnet-prerendering",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "src",
   "projectType": "library",
@@ -43,7 +43,7 @@
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "coverage/aspnet-prerenderer"
+        "reportsDirectory": "coverage/aspnet-prerendering"
       }
     }
   },

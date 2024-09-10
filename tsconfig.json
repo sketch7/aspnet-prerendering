@@ -16,11 +16,12 @@
       "es2022",
       "dom"
     ],
+    // "composite": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@ssv/aspnet-prerenderer": [
+      "@ssv/aspnet-prerendering": [
         "src/index.ts"
       ]
     },
