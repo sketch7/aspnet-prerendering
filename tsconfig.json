@@ -1,0 +1,41 @@
+{
+  // "extends": "./node_modules/@ssv/tools/config/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    // "noUnusedParameters": false,
+    // "noUnusedLocals": false,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "esnext",
+    "lib": [
+      "es2022",
+      "dom"
+    ],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@ssv/aspnet-prerenderer": [
+        "src/index.ts"
+      ]
+    },
+    "types": [
+      "vitest"
+    ]
+  },
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}
