@@ -43,19 +43,20 @@ import { AppServerModule } from "./app/app.server.module";
 enableProdMode();
 
 interface TransferData {
+  originalHtml: string;
   startupContext: StartupContext; // custom
   request: any;
 }
 
 export default createServerRenderer(params => {
-  const { startupContext } = params.data as TransferData;
+  const { startupContext, originalHtml } = params.data as TransferData;
   const extraProviders = [
     { provide: APP_BASE_HREF, useValue: startupContext.virtualPath },
     { provide: "BASE_URL", useValue: params.origin + params.baseUrl },
   ];
 
   const options = {
-    document: params.data.originalHtml,
+    document: originalHtml,
     url: params.url,
     extraProviders
   };
@@ -64,7 +65,6 @@ export default createServerRenderer(params => {
 
   return renderPromise.then(html => ({ html }));
 });
-
 ```
 
 
