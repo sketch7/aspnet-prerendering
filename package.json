@@ -1,6 +1,6 @@
 {
   "name": "@ssv/aspnet-prerendering",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "versionSuffix": "",
   "description": "aspnet SPA Services Node prerendering ESM compatible.",
   "homepage": "https://github.com/sketch7/aspnet-prerendering",

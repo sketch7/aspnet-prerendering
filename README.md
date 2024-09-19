@@ -30,17 +30,12 @@ npm install @ssv/aspnet-prerendering
 ## Usage
 
 ```ts
-import "zone.js/node";
-import "reflect-metadata";
 import { renderModule } from "@angular/platform-server";
 import { APP_BASE_HREF } from "@angular/common";
-import { enableProdMode } from "@angular/core";
 // import { createServerRenderer } from "aspnet-prerendering";
 import { createServerRenderer } from "@ssv/aspnet-prerendering";
 
 import { AppServerModule } from "./app/app.server.module";
-
-enableProdMode();
 
 interface TransferData {
   originalHtml: string;
