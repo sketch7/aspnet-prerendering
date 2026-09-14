@@ -1,5 +1,12 @@
 {
   "name": "@ssv/aspnet-prerendering",
+  "engines": {
+    "node": ">=24.14.0",
+    "npm": ">=11.5.1"
+  },
+  "volta": {
+    "node": "24.14.0"
+  },
   "version": "1.0.1",
   "versionSuffix": "",
   "description": "aspnet SPA Services Node prerendering ESM compatible.",
